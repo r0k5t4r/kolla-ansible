@@ -1,4 +1,5 @@
-# the deployment variable can be either multinode or all-in-one, by default it is multinode
+# the deployment variable can be either $deployment or all-in-one, by default it is $deployment
+cd
 deployment="multinode"
 sudo dnf install -y python3-devel libffi-devel gcc openssl-devel python3-libselinux
 sudo dnf install -y python3-pip
@@ -11,16 +12,16 @@ sudo pip3 install --ignore-installed PyYAML kolla-ansible
 sudo mkdir -p /etc/kolla
 sudo chown $USER:$USER /etc/kolla
 cp -r /usr/local/share/kolla-ansible/etc_examples/kolla/* /etc/kolla
-cp /usr/local/share/kolla-ansible/ansible/inventory/* .
+cp /usr/local/share/kolla-ansible/ansible/inventory/* ~
 #sudo sed -i '/^\[defaults\]/a host_key_checking=False\npipelining=True\nforks=100\ntimeout=40' /etc/ansible/ansible.cfg
 # ansible cfg has to be created from scratch when using pip!!!#
-cat <<EOT > ansible.cfg
+cat > ~/ansible.cfg << EOF
 [defaults]
 host_key_checking=False
 pipelining=True
 forks=100
 timeout=40
-EOT
+EOF
 
 sed -i 's/^#kolla_base_distro:.*/kolla_base_distro: "centos"/g' /etc/kolla/globals.yml
 sed -i 's/^#kolla_install_type:.*/kolla_install_type: "source"/g' /etc/kolla/globals.yml
@@ -52,7 +53,7 @@ kolla-ansible -i all-in-one pull
 #     docker push localhost:4000/kolla/centos-binary-heat-api:3.0.1
 
 #cat <<EOT > push_docker_img.sh
-cat > push_docker_img.sh << EOF
+cat > ~/push_docker_img.sh << EOF
 docker images | grep kolla | grep -v local | awk '{print \$1,\$2}' | while read -r image tag; do 
         newimg=\`echo \${image} | cut -d / -f2-\`
         docker tag \${image}:\${tag} localhost:4000/\${newimg}:\${tag}
@@ -65,21 +66,16 @@ sudo sh push_docker_img.sh
 sed -i 's/^#docker_registry:.*/docker_registry: 192.168.2.210:4000/g' /etc/kolla/globals.yml
 sed -i 's/^#docker_registry_insecure:.*/docker_registry_insecure: yes/g' /etc/kolla/globals.yml
 
-#if [ "$deployment" = "multinode" ]
+cp /Vagrantfiles/scripts/$deployment ~
 
-cp /Vagrantfiles/multinode .
-
-ansible -i multinode compute,control -m shell -a "yum -y update" -b
-ansible -i multinode compute,control --forks 1 -m reboot
-ansible -i multinode all -m shell -a "systemctl enable chronyd; systemctl restart chronyd" -b
+ansible -i $deployment compute,control -m shell -a "yum -y update" -b
+ansible -i $deployment compute,control --forks 1 -m reboot
+ansible -i $deployment all -m shell -a "systemctl enable chronyd; systemctl restart chronyd" -b
 kolla-genpwd
 
-time kolla-ansible -i ./multinode bootstrap-servers
-time kolla-ansible -i ./multinode prechecks
-time kolla-ansible -i ./multinode deploy
-
+time kolla-ansible -i ./$deployment bootstrap-servers
+time kolla-ansible -i ./$deployment prechecks
+time kolla-ansible -i ./$deployment deploy
 
 pip install python-openstackclient
-
-
-
+time kolla-ansible post-deploy
