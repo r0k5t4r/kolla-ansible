@@ -25,7 +25,8 @@ EOF
 
 sed -i 's/^#kolla_base_distro:.*/kolla_base_distro: "centos"/g' /etc/kolla/globals.yml
 sed -i 's/^#kolla_install_type:.*/kolla_install_type: "source"/g' /etc/kolla/globals.yml
-sed -i 's/^#kolla_internal_vip_address:.*/kolla_internal_vip_address: "192.168.2.222"/g' /etc/kolla/globals.yml
+sed -i 's/^#kolla_internal_vip_address:.*/kolla_internal_vip_address: "192.168.45.222"/g' /etc/kolla/globals.yml
+sed -i 's/^#kolla_external_vip_address:.*/kolla_external_vip_address: "192.168.2.222"/g' /etc/kolla/globals.yml
 sed -i 's/^#network_interface:.*/network_interface: "eth2"/g' /etc/kolla/globals.yml
 sed -i 's/^#neutron_external_interface:.*/neutron_external_interface: "eth1"/g' /etc/kolla/globals.yml
 sed -i 's/^#enable_haproxy:.*/enable_haproxy: "yes"/g' /etc/kolla/globals.yml

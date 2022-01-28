@@ -1,6 +1,9 @@
+control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true api_interface=eth3
+compute[01:02]     ansible_user=vagrant ansible_password=vagrant ansible_become=true api_interface=eth3
+
 [control]
 # These hostname must be resolvable from your deployment host
-control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
+control[01:03]
 
 # The above can also be specified as follows:
 #control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
@@ -9,15 +12,15 @@ control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=
 # The network nodes are where your l3-agent and loadbalancers will run
 # This can be the same as a host in the control group
 [network]
-control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
+control[01:03]
 #network01
 #network02
 
 [compute]
-compute[01:02]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
+compute[01:02]
 
 [monitoring]
-control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
+control[01:03]
 #monitoring01
 
 # When compute nodes and control nodes use different interfaces,
@@ -26,7 +29,7 @@ control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=
 #compute01 neutron_external_interface=eth0 api_interface=em1 storage_interface=em1 tunnel_interface=em1
 
 [storage]
-control[01:03]     ansible_user=vagrant ansible_password=vagrant ansible_become=true
+control[01:03]
 #storage01
 
 [deployment]

@@ -10,12 +10,12 @@
 # https://stackoverflow.com/questions/51437693/permission-denied-with-vagrant
 
 nodes = [
-	{ :hostname => 'seed', 		:ip => '192.168.0.210', :public_ip => '192.168.2.210', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 4096, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
-	{ :hostname => 'control01', :ip => '192.168.0.211', :public_ip => '192.168.2.211', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
-	{ :hostname => 'control02', :ip => '192.168.0.212', :public_ip => '192.168.2.212', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
-	{ :hostname => 'control03', :ip => '192.168.0.213', :public_ip => '192.168.2.213', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
-	{ :hostname => 'compute01', :ip => '192.168.0.214', :public_ip => '192.168.2.214', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 4096, :osd => 'no', :osdsize => 200, :hv => 'yes', :esxi => 'yes' },
-	{ :hostname => 'compute02', :ip => '192.168.0.215', :public_ip => '192.168.2.215', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 4096, :osd => 'no', :osdsize => 200, :hv => 'yes', :esxi => 'yes' },
+	{ :hostname => 'seed', 		:ip => '192.168.45.210', :public_ip => '192.168.2.210', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 4, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
+	{ :hostname => 'control01', :ip => '192.168.45.211', :public_ip => '192.168.2.211', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
+	{ :hostname => 'control02', :ip => '192.168.45.212', :public_ip => '192.168.2.212', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no',		:esxi => 'yes' },
+	{ :hostname => 'control03', :ip => '192.168.45.213', :public_ip => '192.168.2.213', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 8192, :osd => 'no', :osdsize => 200, :hv => 'no', 	:esxi => 'yes' },
+	{ :hostname => 'compute01', :ip => '192.168.45.214', :public_ip => '192.168.2.214', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 4096, :osd => 'no', :osdsize => 200, :hv => 'yes',	:esxi => 'yes' },
+	{ :hostname => 'compute02', :ip => '192.168.45.215', :public_ip => '192.168.2.215', :box => 'bento/centos-stream-8', :clone_from => 'template-centos8stream', :cpus => 2, :ram => 4096, :osd => 'no', :osdsize => 200, :hv => 'yes', 	:esxi => 'yes' },
 ]
 
 varDomain = "fritz.box"
@@ -23,7 +23,7 @@ varRepository = "files"
 
 $logger = Log4r::Logger.new('vagrantfile')
 def read_ip_address(machine)
-																											 
+
   command = "hostname -I | cut -d ' ' -f 2"
   result  = ""
 
@@ -39,7 +39,7 @@ def read_ip_address(machine)
     result = "# NOT-UP"
     $logger.info "Processing #{ machine.name } ... not running"
   end
-													   
+  
   result.chomp
 end																					 
 
@@ -60,6 +60,7 @@ Vagrant.configure("2") do |config|
 			node_config.vm.hostname = "#{node[:hostname]}.#{varDomain}"
 			node_config.vm.network "public_network", "ip": '0.0.0.0', auto_network: true			
 			node_config.vm.network 'public_network', ip: node[:public_ip], netmask: '255.255.255.0'
+			node_config.vm.network 'public_network', ip: node[:ip], netmask: '255.255.255.0'
 			#node_config.vm.provision "shell", path: "scripts/setup_ssh_root_access.sh"
 			#node_config.vm.provision "shell", path: "scripts/yum-update.sh"			
 			node_config.vm.post_up_message = "This is the start up message!"
